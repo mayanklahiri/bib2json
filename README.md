@@ -10,7 +10,7 @@ Javascript Bibtex to JSON for nodejs and the browser.  It can:
  * be advanced-compiled by Google Closure Compiler.
  * parse "real-world" Bibtex, such as those found [here](http://liinwww.ira.uka.de/bibliography/).
  
-Handwritten as a labor of love, not cruelly auto-generated from a grammar, tested with Jasmiejs.
+Handwritten as a labor of love, not cruelly auto-generated from a grammar, tested with [Jasmine](https://jasmine.github.io/edge/introduction.html).
 
 Usage
 -----
