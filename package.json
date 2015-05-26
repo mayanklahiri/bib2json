@@ -1,0 +1,30 @@
+{
+  "name": "bib2json",
+  "version": "0.0.1",
+  "description": "Javascript parsing of Bibtex to JSON for nodejs and the browser.",
+  "main": "Parser.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mayanklahiri/bib2json.git"
+  },
+  "keywords": [
+    "bibtex",
+    "parser",
+    "javascript",
+    "bib",
+    "json",
+    "nodejs",
+    "browser"
+  ],
+  "author": "Mayank Lahiri <mayank@iceroad.io>",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/mayanklahiri/bib2json/issues"
+  }
+}
