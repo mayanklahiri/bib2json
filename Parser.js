@@ -92,7 +92,8 @@ function BibtexParser(arg0) {
     'periodical'        : 13,
     'booklet'           : 14,
     'masterthesis'      : 15,
-    'conference'        : 16
+    'conference'        : 16,
+    'online'            : 17
   }
   /** @private */ this.MACROS_        = {
     'jan'               : 'January',
