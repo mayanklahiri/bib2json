@@ -23,7 +23,7 @@
     "browser"
   ],
   "author": "Mayank Lahiri <mayank@iceroad.io>",
-  "license": "BSD",
+  "license": "BSD-2-Clause",
   "bugs": {
     "url": "https://github.com/mayanklahiri/bib2json/issues"
   }
