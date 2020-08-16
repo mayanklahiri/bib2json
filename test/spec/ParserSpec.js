@@ -58,4 +58,11 @@ describe("BaseCases", function() {
     expect(result.entries[0].Fields.title).toEqual('well, hello!');
   });
 
+  it("Use # to concatenate string.", function() {
+    var text = '@proceedings{alta-2019-australasian , month = "4 " # jan # {--} # "6 " # dec}';
+    var result = BibtexParser(text);
+    expect(result.entries.length).toEqual(1);
+    expect(result.errors.length).toEqual(0);
+    expect(result.entries[0].Fields.month).toEqual('4 January--6 December');
+  });
 });
