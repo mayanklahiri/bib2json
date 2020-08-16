@@ -407,6 +407,7 @@ function BibtexParser(arg0) {
               this.SKIPCOMMENT_     = true;
               this.STATE_           = this.STATES_.KV_VALUE;
               this.PARSETMP_.Value  = '';
+              this.DATA_.Fields[this.PARSETMP_.Key] = '';
               this.VALBRACES_       = { '"' : [], '{' : [] };
             }
             break;
@@ -419,7 +420,7 @@ function BibtexParser(arg0) {
             var doneParsingValue  = false;
 
             // Test for special characters
-            if (c == '"' || c == '{' || c == '}' || c == ',') {
+            if (c == '"' || c == '{' || c == '}' || c == ',' || c == '#') {
               if (c == ',') {
                 // This comma can mean:
                 // (1) just another comma literal
@@ -427,12 +428,16 @@ function BibtexParser(arg0) {
                 if (0 === delim['"'].length + delim['{'].length) {
                   // end of a macro reference
                   var macro = this.PARSETMP_.Value.trim();
-                  if (macro in this.MACROS_) {
-                    // Successful macro reference
-                    this.PARSETMP_.Value = this.MACROS_[macro];
-                  } else {
-                    // Reference to an undefined macro
-                    this.error_('Reference to an undefined macro: '+macro);
+                  if (macro.length !== 0){
+                    if (macro in this.MACROS_) {
+                      // Successful macro reference
+                      this.PARSETMP_.Value = this.MACROS_[macro];
+                    } else {
+                      // Reference to an undefined macro
+                      this.error_('Reference to an undefined macro: '+macro);
+                    }
+                  }else{
+                    // last one is a string, no need to expand macro
                   }
                   doneParsingValue = true;
                 }
@@ -452,7 +457,13 @@ function BibtexParser(arg0) {
                 if (delim['"'].length == 1 && delim['{'].length == 0 &&
                     (val.length==0 || val[val.length-1] != '\\')) {
                   // closing delimiter
-                  doneParsingValue = true;
+                  //doneParsingValue = true;
+                  this.SKIPWS_        = true;
+                  this.SKIPCOMMENT_   = true;
+                  this.DATA_.Fields[this.PARSETMP_.Key] += this.PARSETMP_.Value;
+                  this.PARSETMP_.Value = '';
+                  delim['"'].pop();
+                  break;
                 } else {
                   // literal, add to value
                 }
@@ -477,12 +488,16 @@ function BibtexParser(arg0) {
                 if (0 === delim['"'].length + delim['{'].length) {
                   // end of object definition, after macro
                   var macro = this.PARSETMP_.Value.trim();
-                  if (macro in this.MACROS_) {
-                    // Successful macro reference
-                    this.PARSETMP_.Value = this.MACROS_[macro];
+                  if (macro.length !== 0) {
+                    if (macro in this.MACROS_) {
+                      // Successful macro reference
+                      this.PARSETMP_.Value = this.MACROS_[macro];
+                    } else {
+                      // Reference to an undefined macro
+                      this.error_('Reference to an undefined macro: ' + macro);
+                    }
                   } else {
-                    // Reference to an undefined macro
-                    this.error_('Reference to an undefined macro: '+macro);
+                    // no need to expand macro.
                   }
                   AnotherIteration = true;
                   doneParsingValue = true;
@@ -493,7 +508,12 @@ function BibtexParser(arg0) {
                       delim['{'].splice(delim['{'].length-1, 1)
                       if (0 == delim['{'].length + delim['"'].length) {
                         // closing delimiter
-                        doneParsingValue = true;
+                        //doneParsingValue = true;
+                        this.SKIPWS_        = true;
+                        this.SKIPCOMMENT_   = true;
+                        this.DATA_.Fields[this.PARSETMP_.Key] += this.PARSETMP_.Value;
+                        this.PARSETMP_.Value = '';
+                        break;
                       } else {
                         // end verbatim block
                       }
@@ -502,6 +522,31 @@ function BibtexParser(arg0) {
                     // literal, add to value
                   }
                 }
+              }
+            }
+            if(c == '#'){
+              // This #/number sign/hash/sharp can mean:
+              // (1) string concatenation using #
+              // (2) literal, if we have a '{' or '"' on the stack
+              if (0 === delim['"'].length + delim['{'].length) { // (1)
+                this.SKIPWS_      = true;
+                this.SKIPCOMMENT_ = true;
+                var macro = this.PARSETMP_.Value.trim();
+                if (macro.length !== 0){
+                  if (macro in this.MACROS_) {
+                    // Successful macro reference
+                    this.PARSETMP_.Value = this.MACROS_[macro];
+                  } else {
+                    // Reference to an undefined macro
+                    this.error_('Reference to an undefined macro: '+macro);
+                  }
+                  break;
+                }else{
+                  // last one is a string, no need to expand macro
+                  break;
+                }
+              } else {
+                // (2) literal, add to value
               }
             }
 
@@ -513,7 +558,7 @@ function BibtexParser(arg0) {
               this.SKIPWS_        = true;
               this.SKIPCOMMENT_   = true;
               this.STATE_         = this.STATES_.KV_KEY;
-              this.DATA_.Fields[this.PARSETMP_.Key] = this.PARSETMP_.Value;
+              this.DATA_.Fields[this.PARSETMP_.Key] += this.PARSETMP_.Value;
               this.PARSETMP_      = { Key: '' };
               this.VALBRACES_     = null;
             } else {
